@@ -47,6 +47,20 @@ docker login -u nielsenjared
 And at the `Password` prompt paste in your access token. 
 
 
+## GitHub Actions
+
+### Build Image on GitHub
+
+Create a new Action and select the Docker Image workflow. 
+
+
+TODO 
+
+
+### Publish Changes to Docker Hub
+
+
+
 
 
 
