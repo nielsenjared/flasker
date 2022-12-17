@@ -152,12 +152,77 @@ Save the workflow file and run the job.
 
 ## Kubernetes
 
-### 
-* now create a K8s cluster with command line with azure , GCP or AWS (AKS, GKE, EKS)
+### Create a Kubernetes Cluster with EKS
+
+```sh
+eksctl create cluster --name flaskernetes --region us-east-1
+```
+
+
+After the cluster is created, check it out 
+https://console.aws.amazon.com/cloudformation/
+
+
+Take a look at your nodes: 
+```sh
+kubectl get nodes -o wide
+```
+
+
+Take a look at the workloads running on the cluster: 
+```sh
+kubectl get pods -A -o wide
+```
+
+
+#### Create a Namespace
 
 ```sh
 kubectl create namespace flask
 ```
+
+
+
+
+
+### Creating s Kubernetes Deployment Manifest 
+
+TODO
+`eks-deployment.yml`
+
+TODO 
+
+Apply the deployment manifest
+TODO
+```sh
+kubectl apply -f eks-deployment.yml 
+```
+
+
+
+Create a service manifest
+TODO `eks-service.yml`
+
+Apply the service manifest: 
+```sh
+kubectl apply -f eks-service.yaml
+```
+
+
+View the resources in the `flask` namespace: 
+```
+kubectl get all -n flaskernetes
+```
+
+
+
+
+
+
+
+
+
+
 
 Create a `k8s` folder and the following files: 
 
@@ -168,10 +233,7 @@ Create a `k8s` folder and the following files:
 * flask-service.yml
 
 
-TODO
-```sh
-kubectl apply -f flask-pod.yml -n flask
-```
+
 
 
 Confirm the pod is running:
@@ -180,20 +242,26 @@ kubectl get pod -n flask
 ```
 
 
-### 
-* create s k8s Deployment manifest that uses your docker image
+### Deploy your manifest to your k8s cluster Using kubectl
+
+TODO
 
 
-### 
-* deploy your manifest to your k8s cluster using kubectl
+### Deploying Kubernetes w/ GitHub Actions
 
-
-### 
-* add deploying to K8s to GitHub actions
-
+https://github.com/marketplace/actions/kubernetes-action
 
 
 
+
+
+
+
+## Clean Up
+
+```sh
+eksctl delete cluster --name flaskernetes --region us-east-1 --fargate
+```
 
 
 
