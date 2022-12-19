@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: flaskernetes
+  namespace: eks-flasker
+  labels:
+    app: flasker
+spec:
+  selector:
+    app: flasker
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000

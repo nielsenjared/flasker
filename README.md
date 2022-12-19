@@ -177,15 +177,20 @@ kubectl get pods -A -o wide
 
 #### Create a Namespace
 
+TODO what's the naming convention? 
+```
+system+cluster-unique-id
+```
+
 ```sh
-kubectl create namespace flask
+kubectl create namespace eks-flasker
 ```
 
 
 
 
 
-### Creating s Kubernetes Deployment Manifest 
+### Creating Kubernetes Deployment Manifest
 
 TODO
 `eks-deployment.yml`
@@ -195,51 +200,208 @@ TODO
 Apply the deployment manifest
 TODO
 ```sh
-kubectl apply -f eks-deployment.yml 
+kubectl apply -f eks-flasker-deployment.yml 
+```
+
+The response will be:
+```sh
+deployment.apps/flaskernetes created
 ```
 
 
+### Creating Kubernetes Service Manifest
 
-Create a service manifest
-TODO `eks-service.yml`
+
+TODO `eks-flasker-service.yml`
 
 Apply the service manifest: 
 ```sh
-kubectl apply -f eks-service.yaml
+kubectl apply -f eks-flasker-service.yml
 ```
 
+
+The response will be:
+```
+service/flaskernetes created
+```
+
+
+
+### View Resources and Details 
 
 View the resources in the `flask` namespace: 
 ```
-kubectl get all -n flaskernetes
+kubectl get all -n eks-flasker
 ```
 
-
-
-
-
-
-
-
-
-
-
-Create a `k8s` folder and the following files: 
-
-* flask-pod.yml
-
-* flask-pod.yml
-
-* flask-service.yml
-
-
-
-
-
-Confirm the pod is running:
+The output will be something like:
 ```sh
-kubectl get pod -n flask
+NAME                               READY   STATUS    RESTARTS   AGE
+pod/flaskernetes-9fffc5965-4vbm7   1/1     Running   0          3m21s
+pod/flaskernetes-9fffc5965-r7kcc   1/1     Running   0          3m21s
+pod/flaskernetes-9fffc5965-v77pm   1/1     Running   0          3m21s
+
+NAME                   TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+service/flaskernetes   ClusterIP   10.100.86.236   <none>        80/TCP    41s
+
+NAME                           READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/flaskernetes   3/3     3            3           3m21s
+
+NAME                                     DESIRED   CURRENT   READY   AGE
+replicaset.apps/flaskernetes-9fffc5965   3         3         3       3m21s
 ```
+
+
+
+
+
+View the details: 
+
+```sh
+kubectl -n eks-flasker describe service flaskernetes
+```
+
+The output will be something like:
+```sh
+Name:              flaskernetes
+Namespace:         eks-flasker
+Labels:            app=flasker
+Annotations:       <none>
+Selector:          app=flasker
+Type:              ClusterIP
+IP Family Policy:  SingleStack
+IP Families:       IPv4
+IP:                10.100.86.236
+IPs:               10.100.86.236
+Port:              <unset>  80/TCP
+TargetPort:        80/TCP
+Endpoints:         192.168.14.25:80,192.168.27.249:80,192.168.62.16:80
+Session Affinity:  None
+Events:            <none>
+```
+
+
+View the details of a pod:
+```sh
+kubectl -n eks-flasker describe pod flaskernetes-5dd7b949b5-6zg8h
+```
+
+Replace the alphanumeric values with those from one your pods listed above. 
+
+The output will be similar to the following:
+```sh
+Name:             flaskernetes-9fffc5965-4vbm7
+Namespace:        eks-flasker
+Priority:         0
+Service Account:  default
+Node:             ip-192-168-32-138.ec2.internal/192.168.32.138
+Start Time:       Mon, 19 Dec 2022 14:35:25 -0500
+Labels:           app=flasker
+                  pod-template-hash=9fffc5965
+Annotations:      kubernetes.io/psp: eks.privileged
+Status:           Running
+IP:               192.168.62.16
+IPs:
+  IP:           192.168.62.16
+Controlled By:  ReplicaSet/flaskernetes-9fffc5965
+Containers:
+  nginx:
+    Container ID:   docker://322a63337994cedc885474656198ca2e80ade7526c30a38783f57d43cc12ef6a
+    Image:          public.ecr.aws/nginx/nginx:1.21
+    Image ID:       docker-pullable://public.ecr.aws/nginx/nginx@sha256:3aac7c736093ce043a17d6e83ef5addb8be321b5b6b93879141e51474448ca65
+    Port:           80/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Mon, 19 Dec 2022 14:35:29 -0500
+    Ready:          True
+    Restart Count:  0
+    Environment:    <none>
+    Mounts:
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-mrztr (ro)
+Conditions:
+  Type              Status
+  Initialized       True 
+  Ready             True 
+  ContainersReady   True 
+  PodScheduled      True 
+Volumes:
+  kube-api-access-mrztr:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              kubernetes.io/os=linux
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
+Events:
+  Type    Reason     Age    From               Message
+  ----    ------     ----   ----               -------
+  Normal  Scheduled  7m43s  default-scheduler  Successfully assigned eks-flasker/flaskernetes-9fffc5965-4vbm7 to ip-192-168-32-138.ec2.internal
+  Normal  Pulling    7m42s  kubelet            Pulling image "public.ecr.aws/nginx/nginx:1.21"
+  Normal  Pulled     7m39s  kubelet            Successfully pulled image "public.ecr.aws/nginx/nginx:1.21" in 2.831763339s
+  Normal  Created    7m39s  kubelet            Created container nginx
+  Normal  Started    7m39s  kubelet            Started container nginx
+```
+
+## Root a Pod
+
+```
+kubectl exec -it flaskernetes-9fffc5965-4vbm7 -n eks-flasker -- /bin/bash
+```
+
+This will ssh you into a pod as root. 
+
+### Hit the Server 
+
+TODO
+```
+curl flaskernetes
+```
+
+The output will be similar to the following: 
+```sh
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to nginx!</title>
+<style>
+html { color-scheme: light dark; }
+body { width: 35em; margin: 0 auto;
+font-family: Tahoma, Verdana, Arial, sans-serif; }
+</style>
+</head>
+<body>
+<h1>Welcome to nginx!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. Further configuration is required.</p>
+
+<p>For online documentation and support please refer to
+<a href="http://nginx.org/">nginx.org</a>.<br/>
+Commercial support is available at
+<a href="http://nginx.com/">nginx.com</a>.</p>
+
+<p><em>Thank you for using nginx.</em></p>
+</body>
+</html>
+```
+
+
+### TODO DNS
+```sh
+cat /etc/resolv.conf
+```
+
+TODO
+```sh
+nameserver 10.100.0.10
+search eks-flasker.svc.cluster.local svc.cluster.local cluster.local ec2.internal
+options ndots:5
+```
+
+10.100.0.10 is automatically assigned as the nameserver for all pods deployed to the cluster.
+
 
 
 ### Deploy your manifest to your k8s cluster Using kubectl
