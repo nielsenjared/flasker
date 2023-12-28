@@ -2,6 +2,7 @@
 
 TODO
 
+## Docker
 
 ### Build the Image
 ```sh
@@ -16,8 +17,8 @@ Don't forget the `.`
 docker run flasker:v0
 ```
 
+GtB6StgknLybhqY
 
-## Docker
 
 https://docs.docker.com/docker-hub/
 
@@ -195,7 +196,44 @@ kubectl create namespace eks-flasker
 TODO
 `eks-deployment.yml`
 
-TODO 
+```yml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flaskernetes
+  namespace: eks-flasker
+  labels:
+    app: flasker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: flasker
+  template:
+    metadata:
+      labels:
+        app: flasker
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/arch
+                operator: In
+                values:
+                - amd64
+                - arm64
+      containers:
+      - name: flask
+        image: nielsenjared/flasker:latest
+        ports:
+        - name: http
+          containerPort: 5000
+        imagePullPolicy: IfNotPresent
+      nodeSelector:
+        kubernetes.io/os: linux
+```
 
 Apply the deployment manifest
 TODO
@@ -214,9 +252,26 @@ deployment.apps/flaskernetes created
 
 TODO `eks-flasker-service.yml`
 
+```yml
+apiVersion: v1
+kind: Service
+metadata:
+  name: flaskernetes
+  namespace: eks-flasker
+  labels:
+    app: flasker
+spec:
+  selector:
+    app: flasker
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+```
+
 Apply the service manifest: 
 ```sh
-kubectl apply -f eks-flasker-service.yml
+  kubectl apply -f eks-flasker-service.yml
 ```
 
 
@@ -345,7 +400,7 @@ Events:
   Normal  Started    7m39s  kubelet            Started container nginx
 ```
 
-## Root a Pod
+### Root a Pod
 
 ```
 kubectl exec -it flaskernetes-9fffc5965-4vbm7 -n eks-flasker -- /bin/bash
