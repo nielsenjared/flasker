@@ -1,6 +1,69 @@
 # Flasker = Flask + Docker
 
-TODO
+In this tutorial, we will build a Docker images using Flask, nginx, and Gunicorn and deploy it to EKS. 
+
+## Docker
+
+
+## Build the Flask App
+
+The first thing we need to do is build our Flask app. We're not going into the details of using Flask in this tutorial, but if you're curious and interested, checkout the [Flask documentation](https://flask.palletsprojects.com/en/2.2.x/). As far as documentation goes, it's pretty good! 
+
+The flask convention is to refer to your application as an "app". 
+
+TODO app folder?
+
+TODO 
+In your `app.py` file, add the following: 
+```py
+from flask import Flask, render_template
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# TODO
+if __name__ == "__main__":
+    app.run(debug=True, host='0.0.0.0')
+```
+
+Let's run down this quickly in case you're new to Flask. We first import our dependencies from the `flask` module:  the `Flask` class and the `render_template` method. We next initialize a Flask app. Then we declare our first and only route, index, or `/`. When a client hits the `/` route, we use the `render_template` method to return our HTML file. 
+
+TODO debug
+
+What HTML file? 
+
+I'm glad you asked. 
+
+Let's create it now. 
+
+Create a `templates` folder, and within your `templates` folder, create an `index.html` file. Add something similar to the follwing: 
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Hey hey!</h1>
+</body>
+</html>
+```
+
+TODO run the app
+
+
+
+
+
+
+
+
+
 
 ## Docker
 
@@ -19,7 +82,10 @@ docker run flasker:v0
 
 GtB6StgknLybhqY
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 48f20b507b18e824db90fab7e17fc3026b55238c
 https://docs.docker.com/docker-hub/
 
 Sign in to Docker Hub.
